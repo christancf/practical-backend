@@ -1,15 +1,20 @@
+import Comment from '../models/comment'
 import Post from '../models/post'
 import { getCommentsByPostIdRepository } from './comment'
 
 export const getPostsRepository = async () => {
   try {
-    const Posts = await Post.find()
-    const PostsWithComments = Posts.map(async (post) => {
-      const comments = await getCommentsByPostIdRepository(post._id.toString())
-
-      post = { ...post._doc, comments }
-      return post
+    const PostList = await Post.find()
+    const CommentList = await Comment.find()
+    console.log('comment::::::;', CommentList)
+    const PostsWithComments = PostList.map((post) => {
+      const comments = CommentList.filter(
+        (comment) => comment.post_id.toString() === post._id.toString(),
+      )
+      console.log('commentssss::::::;', comments)
+      return { ...post._doc, comments }
     })
+    console.log(PostsWithComments)
     return PostsWithComments
   } catch (error) {
     return { status: error.code, message: error.message }
